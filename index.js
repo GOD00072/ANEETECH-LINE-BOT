@@ -8,26 +8,9 @@ const { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } = require("@googl
 
 const app = express();
 const port = 3000;
-
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './'); // Save files to the root of the project directory
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
-
-const upload = multer({ storage: storage });
-
-app.use(express.static('public'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-
 const MODEL_NAME = "gemini-1.5-pro";
 const API_KEY = "AIzaSyD1TYAorQ6bItKk3-tVcasYHnM-o3S4DfA"; // Replace with your API key
+
 app.use(bodyParser.json());
 
 const genAI = new GoogleGenerativeAI(API_KEY);
@@ -122,11 +105,11 @@ async function saveChatHistoryToFile(userId, chatHistory) {
 
 async function sendLoadingAnimation(userId, loadingSeconds) {
   const lineLoadingUrl = 'https://api.line.me/v2/bot/chat/loading/start';
-  const channelAccessToken = 'XtP0q7WFPsW0EHtyswA0zzJLbWFQA0e/Bsgl5Cm5SHjFAFutkNkSi5GU2GI/4zWAxKtQL5dZVbRINfWzX/NIOBdfP0biE4mZj9V2Y24CnNVlS0mmu0TkT+wNNDcZ1+k1AuUCpXmgUCr8YbiyGeLCNgdB04t89/1O/w1cDnyilFU='; // Replace with your channel access token
+  const channelAccessToken = 'Nn6YzAlk3R7IO55726lgh76pBG8Si3nqv4pbV+HuSjohOJgc7YoQI5IK3zH6CVIOtB8/1zMOyqTtpd4mhhcezyKqoha7oTQyx0CgJuyGuvcB/l7E0qB1YJ2Qxu9uUbEtCApN/eB9lWI1Qt42h46exgdB04t89/1O/w1cDnyilFU='; // Replace with your channel access token
 
   const headers = {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer XtP0q7WFPsW0EHtyswA0zzJLbWFQA0e/Bsgl5Cm5SHjFAFutkNkSi5GU2GI/4zWAxKtQL5dZVbRINfWzX/NIOBdfP0biE4mZj9V2Y24CnNVlS0mmu0TkT+wNNDcZ1+k1AuUCpXmgUCr8YbiyGeLCNgdB04t89/1O/w1cDnyilFU=`,
+    'Authorization': `Bearer Nn6YzAlk3R7IO55726lgh76pBG8Si3nqv4pbV+HuSjohOJgc7YoQI5IK3zH6CVIOtB8/1zMOyqTtpd4mhhcezyKqoha7oTQyx0CgJuyGuvcB/l7E0qB1YJ2Qxu9uUbEtCApN/eB9lWI1Qt42h46exgdB04t89/1O/w1cDnyilFU=`,
   };
 
   const body = {
@@ -159,7 +142,7 @@ app.post('/webhook', async (req, res) => {
       try {
         const response = await axios.get(profileUrl, {
           headers: {
-            Authorization: 'Bearer XtP0q7WFPsW0EHtyswA0zzJLbWFQA0e/Bsgl5Cm5SHjFAFutkNkSi5GU2GI/4zWAxKtQL5dZVbRINfWzX/NIOBdfP0biE4mZj9V2Y24CnNVlS0mmu0TkT+wNNDcZ1+k1AuUCpXmgUCr8YbiyGeLCNgdB04t89/1O/w1cDnyilFU='
+            Authorization: 'Bearer Nn6YzAlk3R7IO55726lgh76pBG8Si3nqv4pbV+HuSjohOJgc7YoQI5IK3zH6CVIOtB8/1zMOyqTtpd4mhhcezyKqoha7oTQyx0CgJuyGuvcB/l7E0qB1YJ2Qxu9uUbEtCApN/eB9lWI1Qt42h46exgdB04t89/1O/w1cDnyilFU='
           }
         });
 
@@ -200,7 +183,7 @@ app.post('/webhook', async (req, res) => {
       const lineReplyUrl = 'https://api.line.me/v2/bot/message/reply';
       const headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer XtP0q7WFPsW0EHtyswA0zzJLbWFQA0e/Bsgl5Cm5SHjFAFutkNkSi5GU2GI/4zWAxKtQL5dZVbRINfWzX/NIOBdfP0biE4mZj9V2Y24CnNVlS0mmu0TkT+wNNDcZ1+k1AuUCpXmgUCr8YbiyGeLCNgdB04t89/1O/w1cDnyilFU=', 
+        'Authorization': 'Bearer Nn6YzAlk3R7IO55726lgh76pBG8Si3nqv4pbV+HuSjohOJgc7YoQI5IK3zH6CVIOtB8/1zMOyqTtpd4mhhcezyKqoha7oTQyx0CgJuyGuvcB/l7E0qB1YJ2Qxu9uUbEtCApN/eB9lWI1Qt42h46exgdB04t89/1O/w1cDnyilFU=', 
       };
 
 
@@ -290,8 +273,24 @@ if (textAfterKeyword) {
   res.sendStatus(200);
 });
 
+onst storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './'); // Save files to the root of the project directory
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+app.use(express.static('public'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Route for the home page
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index2.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Route for file upload
@@ -300,15 +299,14 @@ app.post('/upload', upload.single('file'), (req, res) => {
 });
 
 // Route for listing files
-app.get('/files', async (req, res) => {
-  try {
-    const files = await fs.readdir('./'); // อ่านไฟล์ในไดเรกทอรีปัจจุบัน
+app.get('/files', (req, res) => {
+  fs.readdir('./', (err, files) => {
+    if (err) {
+      return res.status(500).send('Unable to scan files');
+    }
     res.json(files);
-  } catch (err) {
-    res.status(500).send('Unable to scan files');
-  }
+  });
 });
-
 
 // Route for downloading a file
 app.get('/download/:filename', (req, res) => {
@@ -326,7 +324,6 @@ app.delete('/delete/:filename', (req, res) => {
     res.send('File deleted successfully');
   });
 });
-
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
